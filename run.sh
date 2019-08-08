@@ -1,13 +1,21 @@
 #!/bin/bash
+export CUDA_VISIBLE_DEVICES=5
 . path.sh
 
 #input choice 
 stage=$1        # <=1: preparation <=2: training <=3: generating <=4: evaluating 
-fea_type=$2     # "vggish" OR "i3d_flow" OR "vggish i3d_flow"
+fea_type=$2     # "vggish" OR "i3d_flow" OR "vggish+i3d_flow"
 fea_names=$3    # vggish OR i3dflow OR vggish+i3dflow 
-num_epochs=$3   # e.g. 20 
+num_epochs=$4   # e.g. 20 
 warmup_steps=$5 # e.g. 9660
 dropout=$6      # e.g. 0.2
+
+echo $stage
+echo $fea_type
+echo $fea_names
+echo $num_epochs
+echo $warmup_steps
+echo $dropout
 
 # data setting 
 batch_size=32                   # number of dialogue instances in each batch 
@@ -65,7 +73,7 @@ if [ $decode_data = 'off' ]; then
   labeled_test=$data_root/lbl_test_set4DSTC7-AVSD.json
   eval_set=${labeled_test}
   if [ $undisclosed_only -eq 1 ]; then
-    eval_set=$data_root/lbl_undisclosedonly_test_set4DSTC7-AVSD.json 
+    eval_set=$data_root/lbl_undiscloseonly_test_set4DSTC7-AVSD.json 
   fi
 fi
 echo Exp Directory $expdir 
@@ -75,12 +83,13 @@ echo Exp Directory $expdir
 # directory and feature file setting
 enc_psize_=`echo $enc_psize|sed "s/ /-/g"`
 enc_hsize_=`echo $enc_hsize|sed "s/ /-/g"`
-fea_type_=`echo $fea_type|sed "s/ /-/g"`
+fea_type_=`echo $fea_type|sed "s/+/ /g"`
 
 # command settings
 train_cmd=""
 test_cmd=""
 gpu_id=`utils/get_available_gpu_id.sh`
+echo "gpu_id:", $gpu_id
 
 set -e
 set -u
@@ -108,7 +117,7 @@ if [ $stage -le 2 ]; then
     echo -------------------------
     python train.py \
       --gpu $gpu_id \
-      --fea-type $fea_type \
+      --fea-type $fea_type_ \
       --train-path "$fea_dir/$fea_file" \
       --train-set $train_set \
       --valid-path "$fea_dir/$fea_file" \
