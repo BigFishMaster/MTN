@@ -205,6 +205,7 @@ class DecoderLayer(nn.Module):
             if type(ae_fts) == list:
                 ae_ft = ae_fts[i]
             else:
+                # not deepcopy, ae_fts will be updated if ae_ft updated
                 ae_ft = ae_fts
             ae_ft = self.sublayer[count](ae_ft, lambda ae_ft: self.auto_encoder_self_attn[i](ae_ft, ae_ft, ae_ft, ae_mask))
             count += 1
@@ -388,7 +389,7 @@ def make_model(src_vocab, tgt_vocab,
         else:
             auto_encoder_generator = None
         decoder = Decoder(DecoderLayer(d_model, c(attn), c(attn), c(attn), c(attn), self_attn, vid_attn, auto_encoder_attn_ls, c(ff), ae_ff, dropout), N, ft_sizes)
-    else: # query ony as source 
+    else: # query only as source
         query_encoder=Encoder(EncoderLayer(d_model, c(attn), c(ff), dropout), N)
         decoder = Decoder(DecoderLayer(d_model, c(attn), c(attn), c(ff), dropout), N)
     model = EncoderDecoder(
