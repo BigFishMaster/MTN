@@ -1,4 +1,4 @@
-## Multimodal Transformer Networks for End-to-End Video-Grounded Dialogue Systems
+##  Multimodal Transformer Networks for End-to-End Video-Grounded Dialogue Systems
 <img src="img/pytorch-logo-dark.png" width="10%"> [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 
 This is the PyTorch implementation of the paper:
